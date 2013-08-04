@@ -63,6 +63,9 @@ int mosquitto_auth_plugin_init(void **userdata, struct mosquitto_auth_opt *auth_
   if (ud->mysql == NULL) {
     fprintf(stderr, "Cannot connect to mysql on %s\n", ud->host);
     ret = MOSQ_ERR_UNKNOWN;
+  }else{
+    fprintf(stderr, "Connected to mysql on %s\n", ud->host);
+  
   }
 
   return (ret);
@@ -101,7 +104,49 @@ int mosquitto_auth_security_cleanup(void *userdata, struct mosquitto_auth_opt *a
 
 int mosquitto_auth_acl_check(void *userdata, const char *clientid, const char *username, const char *topic, int access)
 {
-      return MOSQ_ERR_SUCCESS;
+
+ printf("HI\n");
+#ifdef DEBUG
+	fprintf(stderr, "acl_check u=%s, t=%s, a=%d\n",
+		(username) ? username : "NIL",
+		(topic) ? topic : "NIL",
+		access);
+
+#endif
+
+ printf("RETURNING\n");
+
+	return MOSQ_ERR_ACL_DENIED;
+}
+int IGNORE_mosquitto_auth_acl_check(void *userdata, const char *clientid, const char *username, const char *topic, int access)
+{
+   struct userdata *ud = (struct userdata*) userdata;
+   printf("HI");
+#ifdef DEBUG
+	fprintf(stderr, "acl_check u=%s, t=%s, a=%d\n",
+		(username) ? username : "NIL",
+		(topic) ? topic : "NIL",
+		access);
+#endif
+
+  if (!username || !*username)
+		return MOSQ_ERR_ACL_DENIED;
+  /* FIXME: what to do if not connected to db? */
+  if (ud->mysql == NULL){
+	fprintf(stderr, "acl_check u=%s, t=%s DENIED because no conn to db.\n", username, topic); 
+	return MOSQ_ERR_ACL_DENIED;
+  }
+ long * result;
+ int io = 0;
+ if ((result = db_can_user_access_topic(ud->mysql, username, topic, &io)) == NULL) {
+#ifdef DEBUG
+    fprintf(stderr, "User %s can't access %s\n", username, topic);
+#endif
+    return MOSQ_ERR_ACL_DENIED;
+  }
+  free(result);
+  //return MOSQ_ERR_SUCCESS;
+  return MOSQ_ERR_ACL_DENIED;
 }
 
 
