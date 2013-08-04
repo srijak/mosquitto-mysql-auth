@@ -18,6 +18,11 @@ MYSQL *db_init(char *host, char *user, char *passwd, char *dbname)
   }
   return mysql;
 }
+void db_destroy(MYSQL *con){
+  if (con != NULL){
+    mysql_close(con);
+  }
+}
 
 
 
