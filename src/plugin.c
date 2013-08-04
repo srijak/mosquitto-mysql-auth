@@ -5,6 +5,7 @@
 #include <mosquitto_plugin.h>
 #include <fnmatch.h>
 #include "mysql.h"
+#include "bcrypt.h"
 
 struct userdata {
         MYSQL *mysql;
@@ -144,7 +145,10 @@ int mosquitto_auth_unpwd_check(void *userdata, const char *username, const char 
     return MOSQ_ERR_AUTH;
   }
 
-  match = 1;
+  char outhash[60];
+  bcrypt_hashpw(password, phash, outhash);
+ 
+  match = strcmp(phash, outhash) ;
 
 #ifdef DEBUG
   fprintf(stderr, "unpwd_check: for user=%s, got: %s\n", username, phash);
@@ -152,7 +156,7 @@ int mosquitto_auth_unpwd_check(void *userdata, const char *username, const char 
 #endif
 
   free(phash);
-  return (match == 1) ? MOSQ_ERR_SUCCESS : MOSQ_ERR_AUTH;
+  return (match == 0) ? MOSQ_ERR_SUCCESS : MOSQ_ERR_AUTH;
 }
 
 int mosquitto_auth_psk_key_get(void *userdata, const char *hint, const char *identity, char *key, int max_key_len)
