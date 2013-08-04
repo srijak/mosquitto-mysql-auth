@@ -14,7 +14,7 @@ MYSQL *db_init(char *host, char *user, char *passwd, char *dbname)
   /* Here we make the connection to MySQL */
   if (mysql_real_connect(mysql, host, user, passwd, dbname, 0, NULL, 0) == NULL) {
     fprintf(stderr, "No connection could be made to the database\n");
-    exit(EXIT_FAILURE);
+    return NULL;
   }
   return mysql;
 }
@@ -28,14 +28,10 @@ char *db_getuser_passwd(MYSQL *mysql, char *username, int *io) {
 
   sql = "SELECT `passwd` FROM `user` WHERE `login` = ?";
 
-  int           param_count;
-  short         small_data;
-  int           int_data;
   char          str_data[STRING_SIZE];
   char          result_data[STRING_SIZE];
   unsigned long str_length;
   unsigned long data_length;
-  my_bool       is_null;
 
 
   /* Initialize our statement */
@@ -112,6 +108,7 @@ char *db_getuser_passwd(MYSQL *mysql, char *username, int *io) {
 
 }
 
+#ifdef TEST
 int main(){
   MYSQL *con = db_init("localhost", "root", "root", "dev");
   int i = 0;
@@ -122,5 +119,5 @@ int main(){
     printf("GOT PASSWD: %s\n", a);
   }
 }
-
+#endif
 
