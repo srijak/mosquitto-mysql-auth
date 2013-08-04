@@ -110,6 +110,7 @@ int mosquitto_auth_unpwd_check(void *userdata, const char *username, const char 
   struct userdata *ud = (struct userdata *)userdata;
   char *phash;
   int match, io;
+  io = 0;
 
 #ifdef DEBUG
   fprintf(stderr, "auth_unpwd_check u=%s, p=%s\n",
