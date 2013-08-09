@@ -7,9 +7,6 @@ all: nordbe-auth.so
 nordbe-auth.so : plugin.c mysql.c bcrypt.a  
 	$(CC) ${CFLAGS} -fPIC -shared $^  -L. -o $@   $(MYSQLINC)  
 
-#bcrypt.a:  bcrypt.o  crypt_blowfish/crypt_blowfish.a
-#	ar -xv crypt_blowfish/crypt_blowfish.a
-#	ar -rcs bcrypt.a bcrypt.o crypt_blowfish/crypt_blowfish.a
 bcrypt.a: bcrypt.o crypt_blowfish/crypt_blowfish.a
 	ar r bcrypt.a bcrypt.o crypt_blowfish/*.o
 
@@ -21,6 +18,7 @@ crypt_blowfish/crypt_blowfish.a:
 
 clean :
 	rm -f *.out
+	rm -f *.a
 	rm -f *.o *.so 
 	rm -f *.o bcrypt_test bcrypt.a *~ core
 	$(MAKE) -C crypt_blowfish clean
