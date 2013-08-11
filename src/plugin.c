@@ -116,7 +116,7 @@ int mosquitto_auth_acl_check(void *userdata, const char *clientid, const char *u
 
  printf("RETURNING\n");
 
-	return MOSQ_ERR_ACL_DENIED;
+	return MOSQ_ERR_SUCCESS;
 }
 int IGNORE_mosquitto_auth_acl_check(void *userdata, const char *clientid, const char *username, const char *topic, int access)
 {
