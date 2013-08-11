@@ -131,7 +131,7 @@ char *db_getuser_passwd(MYSQL *mysql, char *username, int *io) {
   MYSQL_BIND param[1], result[1];
   char *sql;
 
-  sql = "SELECT `passwd` FROM `user` WHERE `login` = ?";
+  sql = "SELECT `passwd` FROM `client` WHERE `login` = ? AND `activation` is NULL";
 
   char          str_data[STRING_SIZE];
   char          result_data[STRING_SIZE];
